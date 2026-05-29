@@ -1,0 +1,70 @@
+import { FileDown, BarChart3, Filter, Calendar } from "lucide-react";
+
+export default function ReportesClientesPage() {
+  return (
+    // CAMBIO: Fondo degradado unificado
+    <div className="h-full w-full bg-gradient-to-br from-emerald-600 via-emerald-500 to-amber-400 p-4">
+      <div className="flex flex-col h-full gap-4 animate-in fade-in duration-500">
+        
+        {/* Encabezado */}
+        <div className="flex-none flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-black text-white">Reportes de Clientes</h1>
+            <p className="text-emerald-50 text-sm">Análisis y exportación de datos de clientes.</p>
+          </div>
+          <button className="flex items-center gap-2 bg-white text-emerald-700 hover:bg-emerald-50 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-lg">
+            <FileDown size={16} /> Exportar Excel
+          </button>
+        </div>
+
+        {/* Área de reportes: Fondo blanco traslúcido */}
+        <div className="flex-grow min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          {/* Panel de Filtros */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 p-6 flex flex-col gap-4 shadow-lg">
+            <div className="flex items-center gap-2 text-slate-900 font-bold">
+              <Filter size={18} className="text-emerald-600" /> Configuración de Reporte
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400">Rango de Fechas</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                    <input type="date" className="w-full pl-9 p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none" />
+                  </div>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                    <input type="date" className="w-full pl-9 p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400">Categoría de Cliente</label>
+                <select className="w-full p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none">
+                  <option>Todos los clientes</option>
+                  <option>Corporativos</option>
+                  <option>Particulares</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel de Resumen/Preview */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 p-6 flex flex-col gap-4 shadow-lg">
+            <div className="flex items-center gap-2 text-slate-900 font-bold">
+              <BarChart3 size={18} className="text-emerald-600" /> Resumen Visual
+            </div>
+            
+            <div className="flex-grow flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
+              <p className="text-slate-400 text-sm italic font-medium">Área para gráfico estadístico</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,237 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMIN
+  VENTAS
+  BODEGA
+  GERENCIA
+  OPERADOR
+}
+
+// 1. Gestión de Usuarios y Accesos
+model User {
+  id_user   Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  nombre    String
+  rol       Rol      @default(OPERADOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  emisoresCreados       Plastecniva[]
+  clientesCreados       Cliente[]
+  empresasCreadas       EmpresaTransporte[]
+  choferesCreados       Chofer[]
+  vehiculosCreados      Vehiculo[]
+  guiasCreadas          GuiaRemision[]
+  itemsGuiasCreados     DetalleGuiaItem[]
+  parametrosModificados ParametroSistema[]
+  gramajesCreados       Gramaje[]
+  coloresCreados        Color[]
+  cuellosCreados        Cuello[]
+  productosCreados      Producto[]
+
+  @@map("usuarios")
+}
+
+// 2. Datos del Emisor
+model Plastecniva {
+  id_emisor                Int      @id @default(autoincrement())
+  ruc                      String   @unique
+  razonSocial              String   @default("PLASTECNIVA S.A.")
+  nombreComercial          String?
+  direccionMatriz          String
+  direccionEstablecimiento String?
+  establecimiento          String   @default("001")
+  puntoEmision             String   @default("001")
+  ambiente                 String   @default("PRUEBA")
+  tipoEmision              String   @default("NORMAL")
+  obligadoContabilidad     String   @default("SI")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User           @relation(fields: [id_usuario_creador], references: [id_user])
+  guiasRemision      GuiaRemision[]
+}
+
+// 3. Catálogo de Clientes
+model Cliente {
+  id_cliente        Int      @id @default(autoincrement())
+  identificacion    String   @unique
+  razonSocial       String
+  direccion         String
+  direccionDescarga String?
+  telefono          String?
+  correo            String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User           @relation(fields: [id_usuario_creador], references: [id_user])
+  guiasRemision      GuiaRemision[]
+}
+
+// 4. Catálogo de Empresas de Transporte
+model EmpresaTransporte {
+  id_empresa  Int      @id @default(autoincrement())
+  ruc         String   @unique
+  razonSocial String
+  telefono    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User           @relation(fields: [id_usuario_creador], references: [id_user])
+  guiasRemision      GuiaRemision[]
+}
+
+// 5. Catálogo de Choferes
+model Chofer {
+  id_chofer Int      @id @default(autoincrement())
+  cedula    String   @unique
+  nombre    String
+  telefono  String?
+  licencia  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User           @relation(fields: [id_usuario_creador], references: [id_user])
+  guiasRemision      GuiaRemision[]
+}
+
+// 6. Catálogo de Vehículos
+model Vehiculo {
+  id_vehiculo Int      @id @default(autoincrement())
+  placa       String   @unique
+  marca       String?
+  modelo      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User           @relation(fields: [id_usuario_creador], references: [id_user])
+  guiasRemision      GuiaRemision[]
+}
+
+// 7. Catálogo de Atributos
+model Gramaje {
+  id_gramaje         Int               @id @default(autoincrement())
+  nombre             String            @unique
+  items              DetalleGuiaItem[]
+  id_usuario_creador Int
+  usuario_creador    User              @relation(fields: [id_usuario_creador], references: [id_user])
+}
+
+model Color {
+  id_color           Int               @id @default(autoincrement())
+  nombre             String            @unique
+  items              DetalleGuiaItem[]
+  id_usuario_creador Int
+  usuario_creador    User              @relation(fields: [id_usuario_creador], references: [id_user])
+}
+
+model Cuello {
+  id_cuello          Int               @id @default(autoincrement())
+  nombre             String            @unique
+  items              DetalleGuiaItem[]
+  id_usuario_creador Int
+  usuario_creador    User              @relation(fields: [id_usuario_creador], references: [id_user])
+}
+model Producto {
+  id_producto Int    @id @default(autoincrement())
+  nombre      String @unique
+  createdAt   DateTime @default(now())
+  
+  // Relación opcional: si quieres saber quién creó el producto
+  id_usuario_creador Int
+  usuario_creador    User @relation(fields: [id_usuario_creador], references: [id_user])
+  
+  // Relación inversa: esto permite consultar qué detalles de guías usan este producto
+  detalles DetalleGuiaItem[]
+}
+
+// 8. Cabecera de la Guía de Remisión
+model GuiaRemision {
+  id_guia            Int       @id @default(autoincrement())
+  secuencial         String    @unique
+  claveAcceso        String?   @unique
+  numeroAutorizacion String?   @unique
+  fechaAutorizacion  DateTime?
+  estadoSri          String    @default("PENDIENTE")
+  fechaEmision       DateTime  @default(now())
+  fechaInicioTrans   DateTime
+  fechaFinTrans      DateTime?
+  puntoPartida       String    @default("PLANTA PLASTECNIVA")
+  puntoLlegada       String
+  motivoTraslado     String    @default("VENTA")
+  comprobanteVenta   String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  id_usuario_creador Int
+  usuario_creador    User              @relation(fields: [id_usuario_creador], references: [id_user])
+  id_emisor          Int
+  emisor             Plastecniva       @relation(fields: [id_emisor], references: [id_emisor])
+  id_cliente         Int
+  cliente            Cliente           @relation(fields: [id_cliente], references: [id_cliente])
+  id_empresa_trans   Int
+  empresa_trans      EmpresaTransporte @relation(fields: [id_empresa_trans], references: [id_empresa])
+  id_chofer          Int
+  chofer             Chofer            @relation(fields: [id_chofer], references: [id_chofer])
+  id_vehiculo        Int
+  vehiculo           Vehiculo          @relation(fields: [id_vehiculo], references: [id_vehiculo])
+
+  items DetalleGuiaItem[]
+}
+
+// 9. Detalle de la Guía
+model DetalleGuiaItem {
+  id_detalle Int    @id @default(autoincrement()) 
+  
+  // Relación con el producto genérico
+  id_producto Int
+  producto    Producto @relation(fields: [id_producto], references: [id_producto])
+  
+  // Atributos de esta transacción específica
+  id_gramaje Int
+  gramaje    Gramaje @relation(fields: [id_gramaje], references: [id_gramaje])
+  
+  id_color   Int
+  color      Color   @relation(fields: [id_color], references: [id_color])
+  
+  id_cuello  Int
+  cuello     Cuello  @relation(fields: [id_cuello], references: [id_cuello])
+
+  // Datos propios de la línea de la guía
+  codigoInterno String?
+  descripcion   String
+  cantidad      Int
+  createdAt     DateTime @default(now())
+ 
+  id_guia       Int
+  guiaRemision  GuiaRemision @relation(fields: [id_guia], references: [id_guia], onDelete: Cascade)
+ 
+  id_usuario_creador Int
+  usuario_creador    User @relation(fields: [id_usuario_creador], references: [id_user])
+}
+// 10. Parámetros globales
+model ParametroSistema {
+  id_parametro       Int      @id @default(autoincrement())
+  clave              String   @unique
+  valor              String
+  updatedAt          DateTime @updatedAt
+  id_usuario_creador Int
+  usuario_creador    User     @relation(fields: [id_usuario_creador], references: [id_user])
+}
