@@ -26,10 +26,9 @@ export async function createGuia(formData: FormData) {
 
     // --- DIAGNÓSTICO: Inspección de FormData ---
     console.log("--- Diagnóstico Form Data ---");
-
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+for (const [key, value] of Array.from(formData.entries())) {
+  console.log(`${key}:`, value);
+}
 
     const id_cliente = getInt("id_cliente");
     const id_usuario = getInt("id_usuario");
