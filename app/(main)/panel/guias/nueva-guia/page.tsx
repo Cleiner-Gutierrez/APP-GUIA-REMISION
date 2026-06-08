@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useForm, useFieldArray } from 'react-hook-form';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 import {
   Truck,
