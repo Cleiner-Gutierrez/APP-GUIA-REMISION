@@ -1,11 +1,33 @@
 'use client';
 
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
 import { FileText, Users, ShieldCheck, Truck } from "lucide-react";
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Protección: Si no hay sesión, redirige al login
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/api/auth/signin");
+    }
+  }, [status, router]);
+
+  // Pantalla de carga mientras se verifica la sesión
+  if (status === "loading") {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-emerald-600 text-white font-black">
+        Cargando sistema...
+      </div>
+    );
+  }
+
+  // Si no hay sesión, no renderizamos nada (esperamos la redirección del useEffect)
+  if (!session) return null;
 
   const cards = [
     {
@@ -49,7 +71,7 @@ export default function DashboardPage() {
           <p className="text-emerald-100/70 text-lg">Panel de control centralizado | Plastecniva S.A.S.</p>
         </div>
 
-        {/* Grid de tarjetas limpias */}
+        {/* Grid de tarjetas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {cards.map((card) => (
             <Link 
@@ -57,16 +79,13 @@ export default function DashboardPage() {
               href={card.path}
               className="relative overflow-hidden bg-white/90 backdrop-blur-xl p-8 rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-2 group"
             >
-              {/* Fondo gradiente al hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
               
               <div className="relative flex items-center gap-6">
-                {/* Icono */}
                 <div className="p-4 bg-white rounded-2xl shadow-inner border border-slate-100 group-hover:scale-110 transition-transform duration-500">
                   {card.icon}
                 </div>
                 
-                {/* Texto */}
                 <div className="space-y-1">
                   <h2 className="text-2xl font-black text-slate-900 tracking-tight">
                     {card.title}
@@ -74,7 +93,6 @@ export default function DashboardPage() {
                   <p className="text-sm text-slate-500 font-medium">{card.desc}</p>
                 </div>
 
-                {/* Indicador de flecha */}
                 <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-2 group-hover:translate-x-0">
                   <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white">
                     →
