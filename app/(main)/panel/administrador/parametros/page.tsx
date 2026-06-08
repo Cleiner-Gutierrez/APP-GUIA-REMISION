@@ -1,5 +1,7 @@
 import { Search, UserPlus, ShieldCheck, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function UsuariosPage() {
   // Datos de ejemplo

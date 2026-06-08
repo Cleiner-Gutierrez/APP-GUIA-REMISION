@@ -1,5 +1,6 @@
 import { FileDown, BarChart3, Filter, Calendar } from "lucide-react";
-
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 export default function ReportesClientesPage() {
   return (
     // CAMBIO: Fondo degradado unificado

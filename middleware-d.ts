@@ -7,13 +7,22 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret });
   const { pathname } = req.nextUrl;
 
-  console.log(`[DEBUG] Path: ${pathname} | Token: ${token ? 'PRESENTE' : 'AUSENTE'}`);
+  // 1. Si NO hay token y la ruta es protegida (ej: empieza por /panel), redirige al login
+  if (!token && pathname.startsWith('/panel')) {
+    const loginUrl = new URL('/api/auth/signin', req.url);
+    return NextResponse.redirect(loginUrl);
+  }
 
-  // MODIFICACIÓN TEMPORAL: No redirigir, solo dejar pasar para probar
-  // Si esto quita el 307, el problema es la lógica de redirección.
+  // 2. Si hay token y quiere entrar al login, redirígelo al panel
+  if (token && pathname === '/api/auth/signin') {
+    const dashboardUrl = new URL('/panel', req.url);
+    return NextResponse.redirect(dashboardUrl);
+  }
+
   return NextResponse.next(); 
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth).*)"],
-};
+  // Asegúrate de que aquí solo incluya las rutas que quieres proteger
+  matcher: ["/panel/:path*", "/api/auth/signin"],
+}

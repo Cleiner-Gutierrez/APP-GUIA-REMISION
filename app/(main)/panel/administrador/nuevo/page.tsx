@@ -1,4 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 export default function NuevoUsuarioPage() {
+  
   return (
     <div className="h-full w-full bg-gradient-to-br from-emerald-600 via-emerald-500 to-amber-400 p-4">
       <div className="flex flex-col h-full gap-4 animate-in fade-in duration-500">

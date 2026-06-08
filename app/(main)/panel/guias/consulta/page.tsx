@@ -1,5 +1,7 @@
 import { Search, Edit2, Trash2, Eye, Plus } from "lucide-react";
 import Link from "next/link";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function ConsultaGuiasPage() {
   // Datos de ejemplo para la tabla

@@ -1,6 +1,7 @@
 import { ArrowRight, UserPlus, Users, Search } from "lucide-react";
 import Link from "next/link";
-
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 export default function ClientesInicioPage() {
   return (
     // CAMBIO: Fondo degradado unificado y estructura de contenedor

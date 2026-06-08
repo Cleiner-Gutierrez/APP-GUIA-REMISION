@@ -1,5 +1,7 @@
 import { Search, Edit2, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function ConsultaClientesPage() {
   const clientes = [
