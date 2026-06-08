@@ -22,13 +22,14 @@ export async function createGuia(formData: FormData) {
   try {
 
     const getInt = (key: string) =>
-      parseInt(formData.get(key) as string) || 0;
+      parseInt(formData.get(key) as string || "0");
 
     // --- DIAGNÓSTICO: Inspección de FormData ---
     console.log("--- Diagnóstico Form Data ---");
-for (const [key, value] of Array.from(formData.entries())) {
-  console.log(`${key}:`, value);
-}
+    // Corrección para evitar error de iteración en Vercel
+    for (const [key, value] of Array.from(formData.entries())) {
+      console.log(`${key}:`, value);
+    }
 
     const id_cliente = getInt("id_cliente");
     const id_usuario = getInt("id_usuario");
@@ -130,6 +131,9 @@ for (const [key, value] of Array.from(formData.entries())) {
 
         const rawItems =
           formData.get("items") as string;
+
+        // Validación adicional para asegurar que parseo sea seguro
+        if (!rawItems) throw new Error("No hay items en la guía");
 
         const items = JSON.parse(rawItems);
 
