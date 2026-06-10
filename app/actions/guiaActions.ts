@@ -277,3 +277,89 @@ export async function getGuiaById(id: number) {
     return null;
   }
 }
+// ... (tus otras funciones como createGuia están aquí arriba)
+
+export async function createCliente(formData: FormData) {
+  try {
+    const id_usuario = formData.get("id_usuario");
+
+    if (!id_usuario) {
+      throw new Error("No se pudo identificar al usuario.");
+    }
+
+    const nuevoCliente = await prisma.cliente.create({
+      data: {
+        razonSocial: formData.get('razonSocial') as string,
+        identificacion: formData.get('identificacion') as string,
+        correo: formData.get('correo') as string || null,
+        telefono: formData.get('telefono') as string || null,
+        direccion: formData.get('direccion') as string,
+        direccionDescarga: formData.get('direccionDescarga') as string || null,
+        id_usuario_creador: parseInt(id_usuario as string),
+      },
+    });
+
+    revalidatePath('/panel/clientes'); // Ajusta esto si tu ruta es distinta
+    return { success: true, id: nuevoCliente.id_cliente };
+  } catch (error: any) {
+    console.error("Error al crear cliente:", error);
+    return { success: false, message: error.message };
+  }
+}
+export async function createTransportista(formData: FormData) {
+  try {
+    const id_usuario = formData.get("id_usuario");
+    if (!id_usuario) throw new Error("Sesión no identificada.");
+
+    await prisma.empresaTransporte.create({
+      data: {
+        ruc: formData.get("ruc") as string,
+        razonSocial: formData.get("razonSocial") as string,
+        telefono: formData.get("telefono") as string || null,
+        id_usuario_creador: parseInt(id_usuario as string),
+      },
+    });
+    return { success: true };
+  } catch (error: any) { 
+    return { success: false, message: error.message || "Error al guardar empresa de transporte" }; 
+  }
+}
+
+export async function createChofer(formData: FormData) {
+  try {
+    const id_usuario = formData.get("id_usuario");
+    if (!id_usuario) throw new Error("Sesión no identificada.");
+
+    await prisma.chofer.create({
+      data: {
+        cedula: formData.get("cedula") as string,
+        nombre: formData.get("nombre") as string,
+        telefono: formData.get("telefono") as string || null,
+        licencia: formData.get("licencia") as string || null,
+        id_usuario_creador: parseInt(id_usuario as string),
+      },
+    });
+    return { success: true };
+  } catch (error: any) { 
+    return { success: false, message: error.message || "Error al guardar chofer" }; 
+  }
+}
+
+export async function createVehiculo(formData: FormData) {
+  try {
+    const id_usuario = formData.get("id_usuario");
+    if (!id_usuario) throw new Error("Sesión no identificada.");
+
+    await prisma.vehiculo.create({
+      data: {
+        placa: formData.get("placa") as string,
+        marca: formData.get("marca") as string || null,
+        modelo: formData.get("modelo") as string || null,
+        id_usuario_creador: parseInt(id_usuario as string),
+      },
+    });
+    return { success: true };
+  } catch (error: any) { 
+    return { success: false, message: error.message || "Error al guardar vehículo" }; 
+  }
+}
